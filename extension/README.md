@@ -1,3 +1,7 @@
+Sairam folks,
+We were able to develop a tool which will help us timestamp bhajans on BhajanBliss moving forward. Right now, the tool is still being developed but is usable in a crude form. In order to use this tool, open your chrome developer tools `(Cmd + Shift + I or F12)` and paste the following code into the `Console` tab:
+
+```js
 const {
   fetch: originalFetch
 } = window;
@@ -230,3 +234,6 @@ document.addEventListener('keydown', function(event) {
 
   }
 });
+```
+
+once this is done, give the script about a minte to run, especially on videos longer than an hour.

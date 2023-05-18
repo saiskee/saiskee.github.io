@@ -237,3 +237,16 @@ document.addEventListener('keydown', function(event) {
 ```
 
 once this is done, give the script about a minte to run, especially on videos longer than an hour.
+Your youtube player should look like this: 
+<img width="1039" alt="image" src="https://github.com/saiskee/saiskee.github.io/assets/1731122/67361987-155f-4e31-addf-58b2a2304ca3">
+
+The black areas of the bar correspond to areas where the bhajans have ended, and so if you scrub to those areas, you should find that it is the silence between bhajans. This should help tremendously in timestamping bhajans in longer videos.
+
+Once you're at a timestamp which you believe is a good starting point for a bhajan, click 'c' and a prompt will show up. In this prompt, enter the name of the bhajan and hit "OK" or press enter. Alternatively, if you think the timestamp is not a good one, hit Esc or "Cancel".
+
+<img width="657" alt="image" src="https://github.com/saiskee/saiskee.github.io/assets/1731122/c3f0b6be-d972-4644-b501-7943d8c9e9fd">
+
+<img width="1010" alt="image" src="https://github.com/saiskee/saiskee.github.io/assets/1731122/f3156da2-af90-4381-a79a-7aeea5491ade">
+
+The timestamps  you've been working on should now be available in the "Comment" box. Do not click on this box and continue to timestamp the video. You can then click the "Comment" buttom (wwhich may be grayed out still but it will still work") To post the comment, or copy the timestamps elsewhere.
+

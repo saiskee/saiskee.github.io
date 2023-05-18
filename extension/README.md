@@ -250,3 +250,4 @@ Once you're at a timestamp which you believe is a good starting point for a bhaj
 
 The timestamps  you've been working on should now be available in the "Comment" box. Do not click on this box and continue to timestamp the video. You can then click the "Comment" buttom (wwhich may be grayed out still but it will still work") To post the comment, or copy the timestamps elsewhere.
 
+<img width="1001" alt="image" src="https://github.com/saiskee/saiskee.github.io/assets/1731122/308cb431-3473-43b6-ae00-45e32651c048">

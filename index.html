@@ -7,7 +7,7 @@
   <pre id="json-content"></pre>
 
   <script>
-    fetch('/Users/sai/go/src/github.com/saiskee/saiskee.github.io/test.json.gz')
+    fetch('/test.json.gz')
       .then(response => response.arrayBuffer())
       .then(buffer => {
         const data = pako.inflate(new Uint8Array(buffer), { to: 'string' });

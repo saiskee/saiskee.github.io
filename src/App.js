@@ -24,31 +24,31 @@ class BhajanTable extends React.Component {
       <table style={{ borderCollapse: 'collapse', width: '100%' }}>
         <tbody>
           {Object.entries(bhajan).map(([key, value]) => {
-            if (!value || value.length === 0 || ['song_id','alt_lang'].includes(key)) return null; // Do not display song_id
+            if (!value || value.length === 0 || ['song_id', 'alt_lang'].includes(key)) return null; // Do not display song_id
 
             if (key.includes('lyrics')) {
-                return (
-                    <tr key={key} style={{ borderBottom: '1px solid #ddd' }}>
-                        <td style={{ padding: '8px', border: '1px solid #ddd' }}><strong>{key}</strong></td>
-                        <td style={{ padding: '8px', border: '1px solid #ddd', whiteSpace: 'pre-wrap' }}>{value}</td>
-                    </tr>
-                );
+              return (
+                <tr key={key} style={{ borderBottom: '1px solid #ddd' }}>
+                  <td style={{ padding: '8px', border: '1px solid #ddd' }}><strong>{key}</strong></td>
+                  <td style={{ padding: '8px', border: '1px solid #ddd', whiteSpace: 'pre-wrap' }}>{value}</td>
+                </tr>
+              );
             }
 
             if (key === 'meaning') {
-                return (
-                    <tr key={key} style={{ borderBottom: '1px solid #ddd' }}>
-                        <td style={{ padding: '8px', border: '1px solid #ddd' }}><strong>{key}</strong></td>
-                        <td style={{ padding: '8px', border: '1px solid #ddd' }} dangerouslySetInnerHTML={{ __html: value }}></td>
-                    </tr>
-                );
+              return (
+                <tr key={key} style={{ borderBottom: '1px solid #ddd' }}>
+                  <td style={{ padding: '8px', border: '1px solid #ddd' }}><strong>{key}</strong></td>
+                  <td style={{ padding: '8px', border: '1px solid #ddd' }} dangerouslySetInnerHTML={{ __html: value }}></td>
+                </tr>
+              );
             }
 
             return (
-                <tr key={key} style={{ borderBottom: '1px solid #ddd' }}>
-                    <td style={{ padding: '8px', border: '1px solid #ddd' }}><strong>{key}</strong></td>
-                    <td style={{ padding: '8px', border: '1px solid #ddd' }}>{Array.isArray(value) ? value.join(', ') : value}</td>
-                </tr>
+              <tr key={key} style={{ borderBottom: '1px solid #ddd' }}>
+                <td style={{ padding: '8px', border: '1px solid #ddd' }}><strong>{key}</strong></td>
+                <td style={{ padding: '8px', border: '1px solid #ddd' }}>{Array.isArray(value) ? value.join(', ') : value}</td>
+              </tr>
             );
           })}
         </tbody>
@@ -81,6 +81,14 @@ class BhajanTable extends React.Component {
             type="text"
             value={filterStr}
             onChange={(e) => this.setState({ filterStr: e.target.value })}
+            style={{
+              padding: '10px',
+              border: '2px solid #ccc',
+              borderRadius: '5px',
+              fontSize: '16px',
+              outline: 'none',
+              boxShadow: '0px 0px 5px 0px rgba(0,0,0,0.3)',
+            }}
           />
           <table>
             <tbody>{filteredElements}</tbody>

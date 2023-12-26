@@ -20,11 +20,20 @@ class BhajanTable extends React.Component {
   };
 
   renderBhajanDetails = (bhajan) => {
-    return (
+    var {title, title2, lyrics, meaning, language, deity, raga, beat, tempo, level, url} = bhajan;
+    var firstLine = title;
+    if (title2) {
+      firstLine = title2;
+    } 
+    lyrics = lyrics.replace(/\n/g, '<br/>');
+    return (<div>
+      <a href={"https://sairhythms.org"+url} target='blank'><h3>{firstLine}</h3></a>
+      <p dangerouslySetInnerHTML={{ __html: lyrics }}></p>
+      <em dangerouslySetInnerHTML={{ __html: meaning }}></em>
       <table style={{ borderCollapse: 'collapse', width: '100%' }}>
         <tbody>
           {Object.entries(bhajan).map(([key, value]) => {
-            if (!value || value.length === 0 || ['song_id', 'alt_lang'].includes(key)) return null; // Do not display song_id
+            if (!value || value.length === 0 || ['song_id', 'meaning', 'url', 'alt_lang', 'ts', 'lyrics', 'title', 'title2', 'ulink'].includes(key)) return null; // Do not display song_id
 
             if (key.includes('lyrics')) {
               return (
@@ -44,6 +53,40 @@ class BhajanTable extends React.Component {
               );
             }
 
+            if (key.includes('audio_link')) {
+              // if value is an array, return multiple audio tags
+              let audios = []
+              if (Array.isArray(value)) {
+                audios = value.map((audio) => {
+                  return (<audio controls src={audio} />)
+                })
+              } else {
+                audios = (<audio controls src={value} />)
+              }
+
+              return (<tr key={key} style={{ borderBottom: '1px solid #ddd' }}>
+                <td style={{ padding: '8px', border: '1px solid #ddd' }}><strong>Audio</strong></td>
+                <td style={{ padding: '8px', border: '1px solid #ddd' }}>{audios}</td>
+              </tr>);
+            }
+
+            if (key.includes('video_link')) {
+              let videos = []
+              if (Array.isArray(value)) {
+                videos = value.map((video) => (
+                  <a href={video}>{video}</a>
+                ))
+              } else {
+                videos = (<a href={value}>{value}</a>)
+              }
+              return (<tr key={key} style={{ borderBottom: '1px solid #ddd' }}>
+                <td style={{ padding: '8px', border: '1px solid #ddd' }}><strong>Video</strong></td>
+                <td style={{ padding: '8px', border: '1px solid #ddd' }}>
+                  {videos}
+                </td>
+              </tr>)
+            }
+
             return (
               <tr key={key} style={{ borderBottom: '1px solid #ddd' }}>
                 <td style={{ padding: '8px', border: '1px solid #ddd' }}><strong>{key}</strong></td>
@@ -53,19 +96,20 @@ class BhajanTable extends React.Component {
           })}
         </tbody>
       </table>
-    );
+    </div>)
   };
 
   render() {
     const { elements } = this.props;
     const { filterStr, selectedBhajan } = this.state;
+    
     const options = {
-      keys: ['title', 'title2', 'lyrics', 'meaning', 'language', 'deity', 'raga', 'beat', 'tempo', 'level', 'songtags', 'ulink', 'url', 'ts'],
+      keys: ['title', 'title2', 'lyrics', 'meaning', 'language', 'deity', 'raga', 'beat', 'tempo', 'level'],
       threshold: -10000, // Adjust threshold for fuzziness
       all: true,
-      tokenize: true,
     };
     const results = fuzzysort.go(filterStr, elements, options);
+
     const filteredElements = results.map((bhajan) => (
       <tr key={bhajan.obj.song_id} >
         <td>
@@ -77,6 +121,7 @@ class BhajanTable extends React.Component {
     return (
       <div style={{ display: 'flex' }}>
         <div>
+          Search bhajan: <br/>
           <input
             type="text"
             value={filterStr}
@@ -85,14 +130,15 @@ class BhajanTable extends React.Component {
               padding: '10px',
               border: '2px solid #ccc',
               borderRadius: '5px',
+              width: '25vw',
               fontSize: '16px',
               outline: 'none',
               boxShadow: '0px 0px 5px 0px rgba(0,0,0,0.3)',
             }}
           />
-          <table>
-            <tbody>{filteredElements}</tbody>
-          </table>
+          <div style={{overflowY: 'scroll', maxHeight: '100vh', maxWidth: '50vh', minWidth: '30vw'}}>
+            {filteredElements}
+          </div>
         </div>
         <div style={{ marginLeft: '20px' }}>
           {selectedBhajan && (

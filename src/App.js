@@ -1,7 +1,28 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import fuzzysort from 'fuzzysort';
 import './App.css';
 import bhajans from './bhajans.json';
+import lunr from 'lunr';
+
+
+let idx = lunr(function() {
+    this.ref('song_id');
+    this.field('raga');
+    this.field('tempo');
+    this.field('beat');
+    this.field('deity');
+    this.field('language');
+    this.field('level');
+    this.field('title', {boost: 50});
+    this.field('title2', {boost: 50})
+    this.field('lyrics');
+
+
+
+    bhajans.forEach(function (doc) {
+        this.add(doc);
+    }, this);
+}) 
 
 function App() {
   let b = makeAllValuesLowercase(bhajans);
@@ -13,6 +34,7 @@ function App() {
 }
 
 class BhajanTable extends React.Component {
+
   state = { filterStr: '', selectedBhajan: null };
 
   selectBhajan = (bhajan) => {
@@ -20,7 +42,7 @@ class BhajanTable extends React.Component {
   };
 
   renderBhajanDetails = (bhajan) => {
-    var {title, title2, lyrics, meaning, language, deity, raga, beat, tempo, level, url} = bhajan;
+    var {title, title2, lyrics, meaning, url} = bhajan;
     var firstLine = title;
     if (title2) {
       firstLine = title2;
@@ -58,7 +80,7 @@ class BhajanTable extends React.Component {
               let audios = []
               if (Array.isArray(value)) {
                 audios = value.map((audio) => {
-                  return (<audio controls src={audio} />)
+                  return (<audio key={value} controls src={audio} />)
                 })
               } else {
                 audios = (<audio controls src={value} />)
@@ -104,12 +126,14 @@ class BhajanTable extends React.Component {
     const { filterStr, selectedBhajan } = this.state;
     
     const options = {
-      keys: ['title', 'title2', 'lyrics', 'meaning', 'language', 'deity', 'raga', 'beat', 'tempo', 'level'],
-      threshold: -10000, // Adjust threshold for fuzziness
+      keys: ['title', 'title2', 'lyrics', /*'meaning', 'language', 'deity', 'raga', 'beat', 'tempo', 'level'*/],
+      threshold: -10000,
       all: true,
     };
     const results = fuzzysort.go(filterStr, elements, options);
 
+    // let results2 = idx.search(filterStr);
+   
     const filteredElements = results.map((bhajan) => (
       <tr key={bhajan.obj.song_id} >
         <td>
@@ -117,6 +141,18 @@ class BhajanTable extends React.Component {
         </td>
       </tr>
     ));
+
+    // const filteredElements = results2.map((bhajanRes) => {
+    //   let bhajan = bhajans.filter((bhajan) => bhajan.song_id === bhajanRes.ref)[0];
+    //   return (
+    //     <tr key={bhajan.song_id} >
+    //       <td>
+    //         <button style={{ background: 'none', color: 'blue', border: 'none', padding: 0, font: 'inherit', cursor: 'pointer', textDecoration: 'underline' }} onClick={() => this.selectBhajan(bhajan)}>{bhajan.title}</button>
+    //       </td>
+    //     </tr>
+    //   );
+    
+    // })
 
     return (
       <div style={{ display: 'flex' }}>
@@ -136,14 +172,13 @@ class BhajanTable extends React.Component {
               boxShadow: '0px 0px 5px 0px rgba(0,0,0,0.3)',
             }}
           />
-          <div style={{overflowY: 'scroll', maxHeight: '100vh', maxWidth: '50vh', minWidth: '30vw'}}>
+          <div style={{overflowY: 'scroll', maxHeight: '90vh', maxWidth: '50vh', minWidth: '30vw'}}>
             {filteredElements}
           </div>
         </div>
         <div style={{ marginLeft: '20px' }}>
           {selectedBhajan && (
             <div>
-              <h3>Bhajan Details</h3>
               {this.renderBhajanDetails(selectedBhajan)}
             </div>
           )}

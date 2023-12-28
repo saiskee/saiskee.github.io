@@ -25,10 +25,9 @@ let idx = lunr(function() {
 }) 
 
 function App() {
-  let b = makeAllValuesLowercase(bhajans);
   return (
     <div>
-      <BhajanTable elements={b} />
+      <BhajanTable />
     </div>
   );
 }
@@ -122,7 +121,6 @@ class BhajanTable extends React.Component {
   };
 
   render() {
-    const { elements } = this.props;
     const { filterStr, selectedBhajan } = this.state;
     
     const options = {
@@ -130,7 +128,7 @@ class BhajanTable extends React.Component {
       threshold: -10000,
       all: true,
     };
-    const results = fuzzysort.go(filterStr, elements, options);
+    const results = fuzzysort.go(filterStr, bhajans , options);
 
     // let results2 = idx.search(filterStr);
    

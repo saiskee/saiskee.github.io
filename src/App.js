@@ -1,28 +1,41 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import fuzzysort from 'fuzzysort';
 import './App.css';
 import bhajans from './bhajans.json';
 import lunr from 'lunr';
+import Fuse from 'fuse.js';
+
+// make map from bhajans keyed on song_id
+let bhajanDict = bhajans.reduce((map, bhajan) => {
+  map[bhajan.song_id] = bhajan;
+  return map;
+}, {});
 
 
-let idx = lunr(function() {
-    this.ref('song_id');
-    this.field('raga');
-    this.field('tempo');
-    this.field('beat');
-    this.field('deity');
-    this.field('language');
-    this.field('level');
-    this.field('title', {boost: 50});
-    this.field('title2', {boost: 50})
-    this.field('lyrics');
+let idx = lunr(function () {
+  this.ref('song_id');
+  // this.field('raga');
+  // this.field('tempo');
+  // this.field('beat');
+  // this.field('deity');
+  // this.field('language');
+  // this.field('level');
+  this.field('title', { boost: 10});
+  this.field('title2', {boost: 5})
+  this.field('lyrics');
 
+  bhajans.forEach(function (doc) {
+    this.add(doc);
+  }, this);
+})
 
+const fuseOptions = {
+  keys: ['title', /*'title2', /*'lyrics', /*'meaning', 'language', 'deity', 'raga', 'beat', 'tempo', 'level'*/],
+  // findAllMatches: true,
+  ignoreLocation: true,
+};
 
-    bhajans.forEach(function (doc) {
-        this.add(doc);
-    }, this);
-}) 
+const fuse = new Fuse(bhajans, fuseOptions);
 
 function App() {
   return (
@@ -41,14 +54,14 @@ class BhajanTable extends React.Component {
   };
 
   renderBhajanDetails = (bhajan) => {
-    var {title, title2, lyrics, meaning, url} = bhajan;
+    var { title, title2, lyrics, meaning, url } = bhajan;
     var firstLine = title;
     if (title2) {
       firstLine = title2;
-    } 
+    }
     lyrics = lyrics.replace(/\n/g, '<br/>');
     return (<div>
-      <a href={"https://sairhythms.org"+url} target='blank'><h3>{firstLine}</h3></a>
+      <a href={"https://sairhythms.org" + url} target='blank'><h3>{firstLine}</h3></a>
       <p dangerouslySetInnerHTML={{ __html: lyrics }}></p>
       <em dangerouslySetInnerHTML={{ __html: meaning }}></em>
       <table style={{ borderCollapse: 'collapse', width: '100%' }}>
@@ -82,7 +95,7 @@ class BhajanTable extends React.Component {
                   return (<audio key={value} controls src={audio} />)
                 })
               } else {
-                audios = (<audio controls src={value} />)
+                audios = (<audio key={value} controls src={value} />)
               }
 
               return (<tr key={key} style={{ borderBottom: '1px solid #ddd' }}>
@@ -95,7 +108,7 @@ class BhajanTable extends React.Component {
               let videos = []
               if (Array.isArray(value)) {
                 videos = value.map((video) => (
-                  <a href={video}>{video}</a>
+                  <a key="video" href={video}>{video}</a>
                 ))
               } else {
                 videos = (<a href={value}>{value}</a>)
@@ -122,17 +135,14 @@ class BhajanTable extends React.Component {
 
   render() {
     const { filterStr, selectedBhajan } = this.state;
-    
+
     const options = {
       keys: ['title', 'title2', 'lyrics', /*'meaning', 'language', 'deity', 'raga', 'beat', 'tempo', 'level'*/],
       threshold: -10000,
       all: true,
+      limit: 40,
     };
-    const results = fuzzysort.go(filterStr, bhajans , options);
-
-    // let results2 = idx.search(filterStr);
-   
-    const filteredElements = results.map((bhajan) => (
+    const filteredElements = fuzzysort.go(filterStr, bhajans , options).map((bhajan) => (
       <tr key={bhajan.obj.song_id} >
         <td>
           <button style={{ background: 'none', color: 'blue', border: 'none', padding: 0, font: 'inherit', cursor: 'pointer', textDecoration: 'underline' }} onClick={() => this.selectBhajan(bhajan.obj)}>{bhajan.obj.title}</button>
@@ -140,22 +150,29 @@ class BhajanTable extends React.Component {
       </tr>
     ));
 
-    // const filteredElements = results2.map((bhajanRes) => {
-    //   let bhajan = bhajans.filter((bhajan) => bhajan.song_id === bhajanRes.ref)[0];
+    // const result = fuse.search(filterStr, { limit: 10 });
+    // const filteredElements = result.map((bhajanRes) => {
+    //   let bhajan =  bhajans[bhajanRes.refIndex]
     //   return (
-    //     <tr key={bhajan.song_id} >
-    //       <td>
-    //         <button style={{ background: 'none', color: 'blue', border: 'none', padding: 0, font: 'inherit', cursor: 'pointer', textDecoration: 'underline' }} onClick={() => this.selectBhajan(bhajan)}>{bhajan.title}</button>
-    //       </td>
-    //     </tr>
+    //         <div key={bhajan.song_id + idx}>
+    //           <button style={{ background: 'none', color: 'blue', border: 'none', padding: 0, font: 'inherit', cursor: 'pointer', textDecoration: 'underline' }} onClick={() => {this.selectBhajan(bhajan); console.log(bhajanRes)}}>{bhajan?.title || "unknown bhajan title"}</button>
+    //         </div>
+    //       );
+    // });
+    // const filteredElements = idx.search(filterStr).map((bhajanRes, idx) => {
+    //   let bhajan = bhajanDict[bhajanRes.ref];
+    //   return (
+    //     <div key={bhajan.song_id + idx}>
+    //       <button style={{ background: 'none', color: 'blue', border: 'none', padding: 0, font: 'inherit', cursor: 'pointer', textDecoration: 'underline' }} onClick={() => {this.selectBhajan(bhajan); console.log(bhajanRes)}}>{bhajan?.title || "unknown bhajan title"}</button>
+    //     </div>
     //   );
-    
+
     // })
 
     return (
       <div style={{ display: 'flex' }}>
         <div>
-          Search bhajan: <br/>
+          Search bhajan: <br />
           <input
             type="text"
             value={filterStr}
@@ -170,7 +187,7 @@ class BhajanTable extends React.Component {
               boxShadow: '0px 0px 5px 0px rgba(0,0,0,0.3)',
             }}
           />
-          <div style={{overflowY: 'scroll', maxHeight: '90vh', maxWidth: '50vh', minWidth: '30vw'}}>
+          <div style={{ overflowY: 'scroll', maxHeight: '90vh', maxWidth: '50vh', minWidth: '30vw' }}>
             {filteredElements}
           </div>
         </div>

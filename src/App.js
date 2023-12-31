@@ -59,6 +59,7 @@ class BhajanTable extends React.Component {
     if (title2) {
       firstLine = title2;
     }
+    lyrics = firstLine + '\n' + lyrics;
     lyrics = lyrics.replace(/\n/g, '<br/>');
     return (<div>
       <a href={"https://sairhythms.org" + url} target='blank'><h3>{firstLine}</h3></a>

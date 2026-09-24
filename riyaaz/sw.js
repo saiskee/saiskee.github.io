@@ -1,4 +1,4 @@
-const CACHE = "riyaaz-v1";
+const CACHE = "riyaaz-v2";
 const SHELL = ["/riyaaz/", "/riyaaz/manifest.webmanifest", "/riyaaz/favicon.svg"];
 
 self.addEventListener("install", event => {
@@ -13,6 +13,14 @@ self.addEventListener("activate", event => {
 
 self.addEventListener("fetch", event => {
   if (event.request.method !== "GET") return;
+  if (event.request.mode === "navigate") {
+    event.respondWith(fetch(event.request).then(response => {
+      const copy = response.clone();
+      void caches.open(CACHE).then(cache => cache.put("/riyaaz/", copy));
+      return response;
+    }).catch(() => caches.match("/riyaaz/")));
+    return;
+  }
   event.respondWith(caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
     const copy = response.clone();
     void caches.open(CACHE).then(cache => cache.put(event.request, copy));

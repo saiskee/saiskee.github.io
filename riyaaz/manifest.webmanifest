@@ -1,0 +1,14 @@
+{
+  "name": "Riyāz — Alankar Studio",
+  "short_name": "Riyāz",
+  "description": "Raga-aware practice for bansuri and voice",
+  "start_url": "/riyaaz/",
+  "scope": "/riyaaz/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#17181b",
+  "theme_color": "#17181b",
+  "icons": [
+    { "src": "./favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

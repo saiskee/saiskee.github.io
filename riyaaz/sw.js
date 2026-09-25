@@ -1,4 +1,4 @@
-const CACHE = "riyaaz-v5";
+const CACHE = "riyaaz-v6";
 const SHELL = ["/riyaaz/", "/riyaaz/manifest.webmanifest", "/riyaaz/favicon.svg"];
 
 self.addEventListener("install", event => {
